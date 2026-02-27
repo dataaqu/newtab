@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import heroImage from "@/assets/hero.webp";
+import SleekLineCursor from "./SleekLineCursor";
 
 export default function Hero() {
   return (
@@ -16,6 +17,7 @@ export default function Hero() {
         priority
         className="object-cover"
       />
+      <SleekLineCursor />
     </section>
   );
 }
