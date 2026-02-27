@@ -1,0 +1,57 @@
+{
+  "common": {
+    "siteName": "Newtab",
+    "home": "Home",
+    "blog": "Blog",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "readMore": "Read more",
+    "language": "Language",
+    "switchToEn": "English",
+    "switchToKa": "ქართული"
+  },
+  "hero": {
+    "title": "Welcome",
+    "subtitle": "We create digital experiences",
+    "cta": "Learn more"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "We are a team working on innovative digital solutions."
+  },
+  "services": {
+    "title": "Services",
+    "description": "We offer a full range of digital services.",
+    "items": [
+      { "title": "Web Development", "description": "Building modern and fast web applications." },
+      { "title": "UI/UX Design", "description": "User-centered interface planning and design." },
+      { "title": "SEO Optimization", "description": "Increasing visibility in search engines." }
+    ]
+  },
+  "blog": {
+    "title": "Blog",
+    "latestPosts": "Latest Posts",
+    "noPosts": "No posts yet",
+    "readMore": "Read more",
+    "categories": "Categories",
+    "tags": "Tags",
+    "publishedAt": "Published",
+    "author": "Author",
+    "views": "Views"
+  },
+  "contact": {
+    "title": "Contact",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "success": "Message sent successfully!",
+    "error": "Error. Please try again."
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  }
+}
