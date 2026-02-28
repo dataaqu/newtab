@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface SleekLineCursorProps {
   friction?: number;
@@ -52,6 +52,13 @@ class Node implements NodeType {
   vy = 0;
 }
 
+function isTouchDevice() {
+  return (
+    typeof window !== "undefined" &&
+    ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+  );
+}
+
 export default function SleekLineCursor({
   friction = 0.5,
   trails = 20,
@@ -60,8 +67,15 @@ export default function SleekLineCursor({
   tension = 0.98,
 }: SleekLineCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isTouch, setIsTouch] = useState(true);
 
   useEffect(() => {
+    setIsTouch(isTouchDevice());
+  }, []);
+
+  useEffect(() => {
+    if (isTouch) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -177,29 +191,14 @@ export default function SleekLineCursor({
       }
     }
 
-    function updatePosition(e: MouseEvent | TouchEvent) {
-      if ("touches" in e) {
-        pos.x = e.touches[0].pageX;
-        pos.y = e.touches[0].pageY;
-      } else {
-        pos.x = e.clientX;
-        pos.y = e.clientY;
-      }
+    function updatePosition(e: MouseEvent) {
+      pos.x = e.clientX;
+      pos.y = e.clientY;
     }
 
-    function handleTouchMove(e: TouchEvent) {
-      if (e.touches.length === 1) {
-        pos.x = e.touches[0].pageX;
-        pos.y = e.touches[0].pageY;
-      }
-    }
-
-    function onFirstMove(e: MouseEvent | TouchEvent) {
+    function onFirstMove(e: MouseEvent) {
       document.removeEventListener("mousemove", onFirstMove);
-      document.removeEventListener("touchstart", onFirstMove);
       document.addEventListener("mousemove", updatePosition);
-      document.addEventListener("touchmove", updatePosition);
-      document.addEventListener("touchstart", handleTouchMove);
       updatePosition(e);
       createLines();
       render();
@@ -217,8 +216,6 @@ export default function SleekLineCursor({
     }
 
     document.addEventListener("mousemove", onFirstMove);
-    document.addEventListener("touchstart", onFirstMove);
-    document.body.addEventListener("orientationchange", resizeCanvas);
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("focus", handleFocus);
     window.addEventListener("blur", handleBlur);
@@ -228,15 +225,13 @@ export default function SleekLineCursor({
       ctx.running = false;
       document.removeEventListener("mousemove", onFirstMove);
       document.removeEventListener("mousemove", updatePosition);
-      document.removeEventListener("touchstart", onFirstMove);
-      document.removeEventListener("touchstart", handleTouchMove);
-      document.removeEventListener("touchmove", updatePosition);
-      document.body.removeEventListener("orientationchange", resizeCanvas);
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
     };
-  }, [friction, trails, size, dampening, tension]);
+  }, [isTouch, friction, trails, size, dampening, tension]);
+
+  if (isTouch) return null;
 
   return (
     <canvas
