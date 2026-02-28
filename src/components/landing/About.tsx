@@ -51,6 +51,20 @@ export default function About() {
         </svg>
       </div>
       <DesignTestimonials testimonials={testimonials} />
+      <div className="absolute -bottom-16 left-0 right-0 z-10 h-16 overflow-hidden sm:-bottom-24 sm:h-24">
+        <svg
+          viewBox="0 0 1440 96"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+          className="absolute top-0 h-full w-full"
+        >
+          <path
+            d="M0 0V20C120 44 240 64 360 76C480 88 600 96 720 96C840 96 960 88 1080 76C1200 64 1320 44 1440 20V0H0Z"
+            fill="#050710"
+          />
+        </svg>
+      </div>
     </section>
   );
 }

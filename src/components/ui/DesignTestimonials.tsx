@@ -68,10 +68,10 @@ export default function DesignTestimonials({
   const progressHeight = `${((activeIndex + 1) / testimonials.length) * 100}%`;
 
   return (
-    <div className="flex items-center justify-center overflow-hidden bg-[#050710] py-16 sm:py-24">
+    <div className="flex items-center justify-center overflow-hidden bg-[#050710] px-4 pb-0 pt-12 sm:px-6 sm:pt-24">
       <div
         ref={containerRef}
-        className="relative w-full max-w-5xl px-4 sm:px-6"
+        className="relative w-full max-w-5xl"
         onMouseMove={handleMouseMove}
       >
         {/* Oversized index number */}
@@ -118,7 +118,7 @@ export default function DesignTestimonials({
           </div>
 
           {/* Center content */}
-          <div className="flex-1 py-12 sm:pl-16">
+          <div className="flex-1 px-4 py-6 sm:px-0 sm:py-12 sm:pl-16">
             {/* Company badge */}
             {current.company && (
               <AnimatePresence mode="wait">
@@ -139,11 +139,11 @@ export default function DesignTestimonials({
             )}
 
             {/* Quote */}
-            <div className="relative mb-12 min-h-[8rem] sm:min-h-[10rem]">
+            <div className="relative mb-8 min-h-[6rem] sm:mb-12 sm:min-h-[10rem]">
               <AnimatePresence mode="wait">
                 <motion.blockquote
                   key={`quote-${activeIndex}`}
-                  className="text-2xl font-light leading-[1.15] tracking-tight text-white sm:text-4xl md:text-5xl"
+                  className="text-xl font-light leading-[1.2] tracking-tight text-white sm:text-4xl md:text-5xl"
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -179,7 +179,7 @@ export default function DesignTestimonials({
             </div>
 
             {/* Author row */}
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`author-${activeIndex}`}
@@ -208,7 +208,7 @@ export default function DesignTestimonials({
               {/* Navigation */}
               <div className="flex items-center gap-4">
                 <motion.button
-                  className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/10"
+                  className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white/10 sm:h-12 sm:w-12"
                   whileTap={{ scale: 0.95 }}
                   onClick={goPrev}
                 >
@@ -230,7 +230,7 @@ export default function DesignTestimonials({
                 </motion.button>
 
                 <motion.button
-                  className="group relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-white/10"
+                  className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white/10 sm:h-12 sm:w-12"
                   whileTap={{ scale: 0.95 }}
                   onClick={goNext}
                 >
