@@ -7,9 +7,7 @@
     "services": "Services",
     "contact": "Contact",
     "readMore": "Read more",
-    "language": "Language",
-    "switchToEn": "English",
-    "switchToKa": "ქართული"
+    "language": "Language"
   },
   "hero": {
     "title": "Welcome",

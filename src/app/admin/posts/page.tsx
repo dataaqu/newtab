@@ -46,8 +46,7 @@ export default function AdminPostsPage() {
 
   const filtered = posts.filter(
     (p) =>
-      p.titleEn.toLowerCase().includes(search.toLowerCase()) ||
-      p.titleKa.includes(search)
+      p.titleEn.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -115,7 +114,6 @@ export default function AdminPostsPage() {
                 <tr key={post.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900">{post.titleEn}</div>
-                    <div className="text-xs text-gray-400">{post.titleKa}</div>
                   </td>
                   <td className="px-6 py-4">
                     <span

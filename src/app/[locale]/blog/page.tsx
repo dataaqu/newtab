@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import type { Metadata } from "next";
 
@@ -8,31 +8,24 @@ interface Props {
   searchParams: { page?: string; category?: string };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const isKa = params.locale === "ka";
+export async function generateMetadata(): Promise<Metadata> {
   const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-  const title = isKa ? "ბლოგი - Newtab" : "Blog - Newtab";
-  const description = isKa
-    ? "წაიკითხეთ უახლესი სტატიები და სიახლეები"
-    : "Read the latest articles and news";
+  const title = "Blog - Newtab";
+  const description = "Read the latest articles and news";
 
   return {
     title,
     description,
     alternates: {
-      canonical: `${siteUrl}/${params.locale}/blog`,
-      languages: {
-        ka: `${siteUrl}/ka/blog`,
-        en: `${siteUrl}/en/blog`,
-      },
+      canonical: `${siteUrl}/blog`,
     },
     openGraph: {
       title,
       description,
-      url: `${siteUrl}/${params.locale}/blog`,
+      url: `${siteUrl}/blog`,
       siteName: "Newtab",
-      locale: isKa ? "ka_GE" : "en_US",
+      locale: "en_US",
       type: "website",
     },
   };
@@ -55,7 +48,7 @@ async function getPosts(page: number, category?: string) {
       orderBy: { createdAt: "desc" },
       include: {
         author: { select: { name: true } },
-        categories: { select: { nameKa: true, nameEn: true, slug: true } },
+        categories: { select: { nameEn: true, slug: true } },
       },
     }),
     prisma.post.count({ where }),
@@ -69,13 +62,10 @@ async function getCategories() {
 }
 
 export default async function BlogPage({ searchParams }: Props) {
-  const locale = await getLocale();
   const t = await getTranslations("blog");
   const page = parseInt(searchParams.page || "1");
   const { posts, totalPages } = await getPosts(page, searchParams.category);
   const categories = await getCategories();
-
-  const isKa = locale === "ka";
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
@@ -92,7 +82,7 @@ export default async function BlogPage({ searchParams }: Props) {
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
-            {isKa ? "ყველა" : "All"}
+            All
           </Link>
           {categories.map((cat) => (
             <Link
@@ -104,7 +94,7 @@ export default async function BlogPage({ searchParams }: Props) {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {isKa ? cat.nameKa : cat.nameEn}
+              {cat.nameEn}
             </Link>
           ))}
         </div>
@@ -122,22 +112,20 @@ export default async function BlogPage({ searchParams }: Props) {
             >
               <Link href={`/blog/${post.slug}`}>
                 <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 sm:text-xl">
-                  {isKa ? post.titleKa : post.titleEn}
+                  {post.titleEn}
                 </h2>
               </Link>
 
-              {(isKa ? post.excerptKa : post.excerptEn) && (
+              {post.excerptEn && (
                 <p className="mt-1.5 text-sm text-gray-600 sm:mt-2 sm:text-base">
-                  {isKa ? post.excerptKa : post.excerptEn}
+                  {post.excerptEn}
                 </p>
               )}
 
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-400 sm:mt-4 sm:gap-4 sm:text-sm">
                 {post.author.name && <span>{post.author.name}</span>}
                 <span>
-                  {new Date(post.createdAt).toLocaleDateString(
-                    isKa ? "ka-GE" : "en-US"
-                  )}
+                  {new Date(post.createdAt).toLocaleDateString("en-US")}
                 </span>
                 <span>
                   {post.views} {t("views")}
@@ -151,7 +139,7 @@ export default async function BlogPage({ searchParams }: Props) {
                       key={cat.slug}
                       className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600"
                     >
-                      {isKa ? cat.nameKa : cat.nameEn}
+                      {cat.nameEn}
                     </span>
                   ))}
                 </div>

@@ -12,13 +12,11 @@ const TiptapEditor = dynamic(
 
 interface Category {
   id: string;
-  nameKa: string;
   nameEn: string;
 }
 
 interface Tag {
   id: string;
-  nameKa: string;
   nameEn: string;
 }
 
@@ -27,22 +25,16 @@ export default function EditPostPage() {
   const params = useParams();
   const postId = params.id as string;
 
-  const [tab, setTab] = useState<"ka" | "en">("en");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [titleKa, setTitleKa] = useState("");
   const [titleEn, setTitleEn] = useState("");
-  const [contentKa, setContentKa] = useState("");
   const [contentEn, setContentEn] = useState("");
-  const [excerptKa, setExcerptKa] = useState("");
   const [excerptEn, setExcerptEn] = useState("");
   const [slug, setSlug] = useState("");
   const [status, setStatus] = useState("DRAFT");
 
-  const [metaTitleKa, setMetaTitleKa] = useState("");
   const [metaTitleEn, setMetaTitleEn] = useState("");
-  const [metaDescKa, setMetaDescKa] = useState("");
   const [metaDescEn, setMetaDescEn] = useState("");
   const [ogImage, setOgImage] = useState("");
   const [focusKeyword, setFocusKeyword] = useState("");
@@ -61,17 +53,12 @@ export default function EditPostPage() {
     ]).then(([postData, catData, tagData]) => {
       const post = postData.post;
       if (post) {
-        setTitleKa(post.titleKa || "");
         setTitleEn(post.titleEn || "");
-        setContentKa(post.contentKa || "");
         setContentEn(post.contentEn || "");
-        setExcerptKa(post.excerptKa || "");
         setExcerptEn(post.excerptEn || "");
         setSlug(post.slug || "");
         setStatus(post.status || "DRAFT");
-        setMetaTitleKa(post.metaTitleKa || "");
         setMetaTitleEn(post.metaTitleEn || "");
-        setMetaDescKa(post.metaDescKa || "");
         setMetaDescEn(post.metaDescEn || "");
         setOgImage(post.ogImage || "");
         setFocusKeyword(post.focusKeyword || "");
@@ -89,8 +76,8 @@ export default function EditPostPage() {
   }, [postId]);
 
   async function handleSave(newStatus: "DRAFT" | "PUBLISHED") {
-    if (!titleEn.trim() || !titleKa.trim()) {
-      alert("Both titles (KA and EN) are required.");
+    if (!titleEn.trim()) {
+      alert("Title is required.");
       return;
     }
 
@@ -101,15 +88,15 @@ export default function EditPostPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         slug,
-        titleKa,
+        titleKa: titleEn,
         titleEn,
-        contentKa,
+        contentKa: contentEn,
         contentEn,
-        excerptKa,
+        excerptKa: excerptEn,
         excerptEn,
-        metaTitleKa: metaTitleKa || null,
+        metaTitleKa: metaTitleEn || null,
         metaTitleEn: metaTitleEn || null,
-        metaDescKa: metaDescKa || null,
+        metaDescKa: metaDescEn || null,
         metaDescEn: metaDescEn || null,
         ogImage: ogImage || null,
         focusKeyword: focusKeyword || null,
@@ -187,95 +174,39 @@ export default function EditPostPage() {
         />
       </div>
 
-      {/* Language Tabs */}
+      {/* Content */}
       <div className="mt-6 rounded-xl bg-white shadow-sm">
-        <div className="flex border-b border-gray-200">
-          <button
-            onClick={() => setTab("en")}
-            className={`flex-1 px-4 py-3 text-sm font-medium ${
-              tab === "en"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            English
-          </button>
-          <button
-            onClick={() => setTab("ka")}
-            className={`flex-1 px-4 py-3 text-sm font-medium ${
-              tab === "ka"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            ქართული
-          </button>
-        </div>
-
         <div className="p-6">
-          {tab === "en" ? (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Title (EN)
-                </label>
-                <input
-                  type="text"
-                  value={titleEn}
-                  onChange={(e) => setTitleEn(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Excerpt (EN)
-                </label>
-                <textarea
-                  value={excerptEn}
-                  onChange={(e) => setExcerptEn(e.target.value)}
-                  rows={2}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Content (EN)
-                </label>
-                <TiptapEditor content={contentEn} onChange={setContentEn} />
-              </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
+              <input
+                type="text"
+                value={titleEn}
+                onChange={(e) => setTitleEn(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  სათაური (KA)
-                </label>
-                <input
-                  type="text"
-                  value={titleKa}
-                  onChange={(e) => setTitleKa(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  აღწერა (KA)
-                </label>
-                <textarea
-                  value={excerptKa}
-                  onChange={(e) => setExcerptKa(e.target.value)}
-                  rows={2}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  კონტენტი (KA)
-                </label>
-                <TiptapEditor content={contentKa} onChange={setContentKa} />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Excerpt
+              </label>
+              <textarea
+                value={excerptEn}
+                onChange={(e) => setExcerptEn(e.target.value)}
+                rows={2}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
             </div>
-          )}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Content
+              </label>
+              <TiptapEditor content={contentEn} onChange={setContentEn} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -295,77 +226,38 @@ export default function EditPostPage() {
         {seoOpen && (
           <div className="border-t border-gray-100 p-6 pt-4">
             <div className="space-y-4">
-              {tab === "en" ? (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Meta Title (EN)
-                    </label>
-                    <input
-                      type="text"
-                      value={metaTitleEn}
-                      onChange={(e) => setMetaTitleEn(e.target.value)}
-                      placeholder="SEO title for search engines (max 60 chars)"
-                      maxLength={70}
-                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                    <p className="mt-1 text-xs text-gray-400">
-                      {metaTitleEn.length}/60 characters
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Meta Description (EN)
-                    </label>
-                    <textarea
-                      value={metaDescEn}
-                      onChange={(e) => setMetaDescEn(e.target.value)}
-                      rows={2}
-                      placeholder="SEO description for search results (max 160 chars)"
-                      maxLength={170}
-                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                    <p className="mt-1 text-xs text-gray-400">
-                      {metaDescEn.length}/160 characters
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      მეტა სათაური (KA)
-                    </label>
-                    <input
-                      type="text"
-                      value={metaTitleKa}
-                      onChange={(e) => setMetaTitleKa(e.target.value)}
-                      placeholder="SEO სათაური საძიებო სისტემებისთვის (მაქს 60 სიმბოლო)"
-                      maxLength={70}
-                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                    <p className="mt-1 text-xs text-gray-400">
-                      {metaTitleKa.length}/60 სიმბოლო
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      მეტა აღწერა (KA)
-                    </label>
-                    <textarea
-                      value={metaDescKa}
-                      onChange={(e) => setMetaDescKa(e.target.value)}
-                      rows={2}
-                      placeholder="SEO აღწერა საძიებო შედეგებისთვის (მაქს 160 სიმბოლო)"
-                      maxLength={170}
-                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                    <p className="mt-1 text-xs text-gray-400">
-                      {metaDescKa.length}/160 სიმბოლო
-                    </p>
-                  </div>
-                </>
-              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Meta Title
+                </label>
+                <input
+                  type="text"
+                  value={metaTitleEn}
+                  onChange={(e) => setMetaTitleEn(e.target.value)}
+                  placeholder="SEO title for search engines (max 60 chars)"
+                  maxLength={70}
+                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <p className="mt-1 text-xs text-gray-400">
+                  {metaTitleEn.length}/60 characters
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Meta Description
+                </label>
+                <textarea
+                  value={metaDescEn}
+                  onChange={(e) => setMetaDescEn(e.target.value)}
+                  rows={2}
+                  placeholder="SEO description for search results (max 160 chars)"
+                  maxLength={170}
+                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+                <p className="mt-1 text-xs text-gray-400">
+                  {metaDescEn.length}/160 characters
+                </p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -410,13 +302,13 @@ export default function EditPostPage() {
             />
           </div>
           <SeoAnalyzer
-            title={tab === "en" ? titleEn : titleKa}
-            metaTitle={tab === "en" ? metaTitleEn : metaTitleKa}
-            metaDesc={tab === "en" ? metaDescEn : metaDescKa}
-            content={tab === "en" ? contentEn : contentKa}
+            title={titleEn}
+            metaTitle={metaTitleEn}
+            metaDesc={metaDescEn}
+            content={contentEn}
             focusKeyword={focusKeyword}
             slug={slug}
-            isEnglish={tab === "en"}
+            isEnglish={true}
           />
         </div>
       </div>
@@ -440,7 +332,6 @@ export default function EditPostPage() {
                     className="rounded border-gray-300 text-blue-600"
                   />
                   <span className="text-sm text-gray-700">{cat.nameEn}</span>
-                  <span className="text-xs text-gray-400">({cat.nameKa})</span>
                 </label>
               ))}
             </div>

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 
 async function getLatestPosts() {
@@ -15,9 +15,7 @@ async function getLatestPosts() {
 
 export default async function BlogPreview() {
   const posts = await getLatestPosts();
-  const locale = await getLocale();
   const t = await getTranslations("blog");
-  const isKa = locale === "ka";
 
   if (posts.length === 0) return null;
 
@@ -38,19 +36,17 @@ export default async function BlogPreview() {
               className="group rounded-xl bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6"
             >
               <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-600 sm:text-lg">
-                {isKa ? post.titleKa : post.titleEn}
+                {post.titleEn}
               </h3>
-              {(isKa ? post.excerptKa : post.excerptEn) && (
+              {post.excerptEn && (
                 <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600">
-                  {isKa ? post.excerptKa : post.excerptEn}
+                  {post.excerptEn}
                 </p>
               )}
               <div className="mt-3 flex items-center gap-3 text-xs text-gray-400 sm:mt-4">
                 {post.author.name && <span>{post.author.name}</span>}
                 <span>
-                  {new Date(post.createdAt).toLocaleDateString(
-                    isKa ? "ka-GE" : "en-US"
-                  )}
+                  {new Date(post.createdAt).toLocaleDateString("en-US")}
                 </span>
               </div>
             </Link>

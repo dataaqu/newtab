@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Preloader from "@/components/Preloader";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <Preloader />
+        {children}
+      </body>
     </html>
   );
 }

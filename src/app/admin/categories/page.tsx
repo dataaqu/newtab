@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 interface Category {
   id: string;
-  nameKa: string;
   nameEn: string;
   slug: string;
   _count: { posts: number };
@@ -12,7 +11,6 @@ interface Category {
 
 interface Tag {
   id: string;
-  nameKa: string;
   nameEn: string;
   slug: string;
   _count: { posts: number };
@@ -25,7 +23,6 @@ export default function AdminCategoriesPage() {
   const [loading, setLoading] = useState(true);
 
   // Form state
-  const [nameKa, setNameKa] = useState("");
   const [nameEn, setNameEn] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -47,14 +44,13 @@ export default function AdminCategoriesPage() {
   }
 
   function resetForm() {
-    setNameKa("");
     setNameEn("");
     setEditingId(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!nameKa.trim() || !nameEn.trim()) return;
+    if (!nameEn.trim()) return;
 
     const endpoint = tab === "categories" ? "/api/categories" : "/api/tags";
 
@@ -62,13 +58,13 @@ export default function AdminCategoriesPage() {
       await fetch(`${endpoint}/${editingId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nameKa, nameEn }),
+        body: JSON.stringify({ nameKa: nameEn, nameEn }),
       });
     } else {
       await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nameKa, nameEn }),
+        body: JSON.stringify({ nameKa: nameEn, nameEn }),
       });
     }
 
@@ -84,7 +80,6 @@ export default function AdminCategoriesPage() {
   }
 
   function startEdit(item: Category | Tag) {
-    setNameKa(item.nameKa);
     setNameEn(item.nameEn);
     setEditingId(item.id);
   }
@@ -134,29 +129,16 @@ export default function AdminCategoriesPage() {
           {editingId ? "Edit" : "Add"}{" "}
           {tab === "categories" ? "Category" : "Tag"}
         </h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <div className="mt-4">
           <div>
             <label className="block text-xs font-medium text-gray-500">
-              Name (KA)
-            </label>
-            <input
-              type="text"
-              value={nameKa}
-              onChange={(e) => setNameKa(e.target.value)}
-              placeholder="ქართული სახელი"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-500">
-              Name (EN)
+              Name
             </label>
             <input
               type="text"
               value={nameEn}
               onChange={(e) => setNameEn(e.target.value)}
-              placeholder="English name"
+              placeholder="Enter name"
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               required
             />
@@ -186,8 +168,7 @@ export default function AdminCategoriesPage() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
-              <th className="px-6 py-3 font-medium text-gray-500">Name (KA)</th>
-              <th className="px-6 py-3 font-medium text-gray-500">Name (EN)</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Name</th>
               <th className="px-6 py-3 font-medium text-gray-500">Slug</th>
               <th className="px-6 py-3 font-medium text-gray-500">Posts</th>
               <th className="px-6 py-3 font-medium text-gray-500">Actions</th>
@@ -196,13 +177,13 @@ export default function AdminCategoriesPage() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
                   Loading...
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
                   No {tab} found. Add one above.
                 </td>
               </tr>
@@ -210,9 +191,8 @@ export default function AdminCategoriesPage() {
               items.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 font-medium text-gray-900">
-                    {item.nameKa}
+                    {item.nameEn}
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{item.nameEn}</td>
                   <td className="px-6 py-4 text-gray-400">{item.slug}</td>
                   <td className="px-6 py-4 text-gray-500">
                     {item._count.posts}

@@ -11,7 +11,7 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  if (!routing.locales.includes(locale as "ka" | "en")) {
+  if (!routing.locales.includes(locale as "en")) {
     notFound();
   }
 

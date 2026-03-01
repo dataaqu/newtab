@@ -1,19 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations, useLocale } from "next-intl";
-import { Link, usePathname, useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { useState, useEffect } from "react";
 import logo from "@/assets/logo.png";
 
 export default function Header() {
   const t = useTranslations("common");
-  const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const otherLocale = locale === "ka" ? "en" : "ka";
 
   // Close mobile menu on route change or resize
   useEffect(() => {
@@ -29,10 +24,6 @@ export default function Header() {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
-
-  function switchLocale() {
-    router.replace(pathname, { locale: otherLocale });
-  }
 
   const navLinks = [
     { href: "#hero", label: t("home") },
@@ -62,25 +53,10 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-
-          {/* Language switcher */}
-          <button
-            onClick={switchLocale}
-            className="rounded-md border border-white/30 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/20"
-          >
-            {locale === "ka" ? "EN" : "KA"}
-          </button>
         </nav>
 
         {/* Mobile controls */}
         <div className="flex items-center gap-2 md:hidden">
-          <button
-            onClick={switchLocale}
-            className="rounded-md border border-white/30 px-2.5 py-1 text-sm font-medium text-white"
-          >
-            {locale === "ka" ? "EN" : "KA"}
-          </button>
-
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/20"

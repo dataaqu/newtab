@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -15,8 +15,8 @@ async function getPost(slug: string) {
     where: { slug },
     include: {
       author: { select: { name: true } },
-      categories: { select: { nameKa: true, nameEn: true, slug: true } },
-      tags: { select: { nameKa: true, nameEn: true, slug: true } },
+      categories: { select: { nameEn: true, slug: true } },
+      tags: { select: { nameEn: true, slug: true } },
     },
   });
   return post;
@@ -34,12 +34,12 @@ async function getAdjacentPosts(createdAt: Date) {
     prisma.post.findFirst({
       where: { status: "PUBLISHED", createdAt: { lt: createdAt } },
       orderBy: { createdAt: "desc" },
-      select: { slug: true, titleKa: true, titleEn: true },
+      select: { slug: true, titleEn: true },
     }),
     prisma.post.findFirst({
       where: { status: "PUBLISHED", createdAt: { gt: createdAt } },
       orderBy: { createdAt: "asc" },
-      select: { slug: true, titleKa: true, titleEn: true },
+      select: { slug: true, titleEn: true },
     }),
   ]);
   return { prev, next };
@@ -49,20 +49,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(params.slug);
   if (!post || post.status !== "PUBLISHED") return {};
 
-  const isKa = params.locale === "ka";
   const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-  const title = isKa
-    ? post.metaTitleKa || post.titleKa
-    : post.metaTitleEn || post.titleEn;
+  const title = post.metaTitleEn || post.titleEn;
+  const description = post.metaDescEn || post.excerptEn || "";
 
-  const description = isKa
-    ? post.metaDescKa || post.excerptKa || ""
-    : post.metaDescEn || post.excerptEn || "";
-
-  const canonicalUrl = `${siteUrl}/${params.locale}/blog/${post.slug}`;
-  const alternateKa = `${siteUrl}/ka/blog/${post.slug}`;
-  const alternateEn = `${siteUrl}/en/blog/${post.slug}`;
+  const canonicalUrl = `${siteUrl}/blog/${post.slug}`;
 
   const images = post.ogImage
     ? [{ url: post.ogImage, width: 1200, height: 630, alt: title }]
@@ -73,17 +65,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: {
       canonical: canonicalUrl,
-      languages: {
-        ka: alternateKa,
-        en: alternateEn,
-      },
     },
     openGraph: {
       title,
       description,
       url: canonicalUrl,
       siteName: "Newtab",
-      locale: isKa ? "ka_GE" : "en_US",
+      locale: "en_US",
       type: "article",
       publishedTime: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
@@ -103,20 +91,16 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(params.slug);
   if (!post || post.status !== "PUBLISHED") notFound();
 
-  const locale = await getLocale();
   const t = await getTranslations("blog");
-  const isKa = locale === "ka";
 
   await incrementViews(post.id);
   const { prev, next } = await getAdjacentPosts(post.createdAt);
 
-  const title = isKa ? post.titleKa : post.titleEn;
-  const content = isKa ? post.contentKa : post.contentEn;
-  const description = isKa
-    ? post.metaDescKa || post.excerptKa || ""
-    : post.metaDescEn || post.excerptEn || "";
+  const title = post.titleEn;
+  const content = post.contentEn;
+  const description = post.metaDescEn || post.excerptEn || "";
   const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  const postUrl = `${siteUrl}/${locale}/blog/${post.slug}`;
+  const postUrl = `${siteUrl}/blog/${post.slug}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -141,7 +125,7 @@ export default async function BlogPostPage({ params }: Props) {
     ...(post.ogImage && {
       image: { "@type": "ImageObject", url: post.ogImage },
     }),
-    inLanguage: isKa ? "ka" : "en",
+    inLanguage: "en",
   };
 
   const breadcrumbJsonLd = {
@@ -151,14 +135,14 @@ export default async function BlogPostPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 1,
-        name: isKa ? "მთავარი" : "Home",
-        item: `${siteUrl}/${locale}`,
+        name: "Home",
+        item: siteUrl,
       },
       {
         "@type": "ListItem",
         position: 2,
-        name: isKa ? "ბლოგი" : "Blog",
-        item: `${siteUrl}/${locale}/blog`,
+        name: "Blog",
+        item: `${siteUrl}/blog`,
       },
       {
         "@type": "ListItem",
@@ -199,9 +183,7 @@ export default async function BlogPostPage({ params }: Props) {
         )}
         <span>
           {t("publishedAt")}:{" "}
-          {new Date(post.publishedAt || post.createdAt).toLocaleDateString(
-            isKa ? "ka-GE" : "en-US"
-          )}
+          {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-US")}
         </span>
         <span>
           {post.views} {t("views")}
@@ -216,7 +198,7 @@ export default async function BlogPostPage({ params }: Props) {
               href={`/blog?category=${cat.slug}`}
               className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100 sm:px-3 sm:py-1"
             >
-              {isKa ? cat.nameKa : cat.nameEn}
+              {cat.nameEn}
             </Link>
           ))}
         </div>
@@ -229,7 +211,7 @@ export default async function BlogPostPage({ params }: Props) {
               key={tag.slug}
               className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600 sm:px-3 sm:py-1"
             >
-              #{isKa ? tag.nameKa : tag.nameEn}
+              #{tag.nameEn}
             </span>
           ))}
         </div>
@@ -247,7 +229,7 @@ export default async function BlogPostPage({ params }: Props) {
             href={`/blog/${prev.slug}`}
             className="text-sm text-gray-600 hover:text-blue-600"
           >
-            ← {isKa ? prev.titleKa : prev.titleEn}
+            ← {prev.titleEn}
           </Link>
         ) : (
           <span />
@@ -257,7 +239,7 @@ export default async function BlogPostPage({ params }: Props) {
             href={`/blog/${next.slug}`}
             className="text-right text-sm text-gray-600 hover:text-blue-600"
           >
-            {isKa ? next.titleKa : next.titleEn} →
+            {next.titleEn} →
           </Link>
         ) : (
           <span />
